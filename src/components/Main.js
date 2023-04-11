@@ -1,54 +1,70 @@
-function Main() {
-  function handleEditAvatarClick() {
-    const popupEditAvatar = document.querySelector(".popup_avatar-edit");
-    popupEditAvatar.classList.add("popup_opened");
-  }
+import React, { useEffect, useState } from "react";
+import api from "../utils/api";
+import Card from "./Card";
 
-  function handleEditProfileClick() {
-    const popupEditProfile = document.querySelector(".popup_edit");
-    popupEditProfile.classList.add("popup_opened");
-  }
+function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
+  const [userBio, setuserBio] = useState("");
 
-  function handleAddPlaceClick() {
-    const popupAddPlace = document.querySelector(".popup_add");
-    popupAddPlace.classList.add("popup_opened");
-  }
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([user, cardsData]) => {
+        setUserName(user.name);
+        setuserBio(user.about);
+        setUserAvatar(user.avatar);
+        setCards(cardsData);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
     <>
-      <main>
-        {/* Profile */}
+      <main className='content'>
         <section className='profile'>
           <div className='profile__content'>
-            <button className='profile__avatar'>
+            <button
+              onClick={onEditAvatar}
+              className='profile__avatar'
+              type='button'
+            >
               <img
-                src='#'
-                alt='Аватар'
+                src={userAvatar}
                 className='profile__avatar-edit'
-                onClick={handleEditAvatarClick}
+                alt='Аватар'
               />
             </button>
             <div className='profile__info'>
-              <h1 className='profile__name'>Жак-Ив Кусто</h1>
+              <h1 className='profile__name'>{userName}</h1>
               <button
+                type='button'
+                onClick={onEditProfile}
                 className='profile__edit-button'
-                title='Редактировать профиль'
-                onClick={handleEditProfileClick}
-              />
-              <p className='profile__bio' />
+              ></button>
+              <p className='profile__bio'>{userBio}</p>
             </div>
           </div>
-          <button
-            className='profile__add-button'
-            title='Добавить карточку'
-            onClick={handleAddPlaceClick}
-          ></button>
+          <button onClick={onAddPlace} className='profile__add-button' />
         </section>
-        {/* /Profile */}
-        {/* Grid-element */}
         <section className='grid-element'>
-          <div className='elements' />
+          <div className='elements'>
+            {cards.map((card) => {
+              return (
+                <Card
+                  card={card}
+                  key={card._id}
+                  name={card.name}
+                  link={card.link}
+                  onCardClick={onCardClick}
+                />
+              );
+            })}
+          </div>
         </section>
-        {/* /Grid-element */}
       </main>
     </>
   );

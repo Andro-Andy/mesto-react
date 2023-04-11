@@ -4,6 +4,12 @@
 
 ### Компоненты
 
+- App
 - Header
 - Main
 - Footer
+- Card
+- EditAvatarPopup
+- ImagePopup
+- PopupWithForm
+- AddPlacePopup
