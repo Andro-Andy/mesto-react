@@ -1,17 +1,44 @@
-import React from "react";
+import { useEffect, useContext, useState } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
-function EditProfilePopup({ isOpen, onClose }) {
+function EditProfilePopup({ isOpen, onClose, onUpdateUser, onChanging }) {
+  const currentUser = useContext(CurrentUserContext);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    setName(currentUser.name);
+    setDescription(currentUser.about);
+  }, [currentUser, isOpen]);
+
+  function handleChangeName(e) {
+    setName(e.target.value);
+  }
+
+  function handleChangeDescription(e) {
+    setDescription(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    onUpdateUser({
+      name,
+      about: description,
+    });
+  }
+
   return (
     <PopupWithForm
       isOpen={isOpen}
       onClose={onClose}
       name='edit-profile'
       title='Редактировать профиль'
-      buttonText='Сохранить'
+      buttonText={onChanging ? "Сохранение..." : "Сохранить"}
+      onSubmit={handleSubmit}
     >
       <input
-        id='input-edit-profile'
         className='popup__form-input popup__form-input_name'
         name='name'
         type='text'
@@ -19,19 +46,22 @@ function EditProfilePopup({ isOpen, onClose }) {
         minLength={2}
         maxLength={40}
         required
+        value={name || ""}
+        onChange={handleChangeName}
       />
-      <span id='input-edit-profile-error' className='popup__error' />
+      <span className='popup__error' />
       <input
-        id='input-edit-bio'
+        className='popup__bio popup__form-input popup__form-input_bio'
         name='info'
         type='text'
-        className='popup__bio popup__form-input popup__form-input_bio'
         placeholder='Введите ваш род занятий'
         minLength={2}
         maxLength={200}
         required
+        value={description || ""}
+        onChange={handleChangeDescription}
       />
-      <span id='input-edit-bio-error' className='popup__error' />
+      <span className='popup__error' />
     </PopupWithForm>
   );
 }

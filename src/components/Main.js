@@ -1,26 +1,17 @@
-import React, { useEffect, useState } from "react";
-import api from "../utils/api";
+import { useContext } from "react";
 import Card from "./Card";
+import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
-  const [userName, setUserName] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
-  const [userBio, setuserBio] = useState("");
-
-  const [cards, setCards] = useState([]);
-
-  useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([user, cardsData]) => {
-        setUserName(user.name);
-        setuserBio(user.about);
-        setUserAvatar(user.avatar);
-        setCards(cardsData);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+function Main({
+  onEditProfile,
+  onAddPlace,
+  onEditAvatar,
+  onCardClick,
+  onCardDelete,
+  onCardLike,
+  cards,
+}) {
+  const currentUser = useContext(CurrentUserContext);
 
   return (
     <>
@@ -32,20 +23,16 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
               className='profile__avatar'
               type='button'
             >
-              <img
-                src={userAvatar}
-                className='profile__avatar-edit'
-                alt='Аватар'
-              />
+              <img src={currentUser.avatar} className='profile__avatar-edit' />
             </button>
             <div className='profile__info'>
-              <h1 className='profile__name'>{userName}</h1>
+              <h1 className='profile__name'>{currentUser.name}</h1>
               <button
                 type='button'
                 onClick={onEditProfile}
                 className='profile__edit-button'
               ></button>
-              <p className='profile__bio'>{userBio}</p>
+              <p className='profile__bio'>{currentUser.about}</p>
             </div>
           </div>
           <button onClick={onAddPlace} className='profile__add-button' />
@@ -60,6 +47,8 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
                   name={card.name}
                   link={card.link}
                   onCardClick={onCardClick}
+                  onCardLike={onCardLike}
+                  onCardDelete={onCardDelete}
                 />
               );
             })}

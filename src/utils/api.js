@@ -20,15 +20,13 @@ class Api {
   }
 
   // Добавить новую карточку
-  addNewCard(name, link) {
+  addNewElement({ name, link }) {
     return fetch(`${this._url}/cards`, {
       method: "POST",
-
       headers: this._headers,
-
       body: JSON.stringify({
-        name: name,
-        link: link,
+        name,
+        link,
       }),
     }).then((res) => this._addResult(res));
   }
@@ -66,19 +64,19 @@ class Api {
   }
 
   // Редакт информации юзера
-  editUserInfo(name, info) {
+  editUserInfo({ name, about }) {
     return fetch(`${this._url}/users/me`, {
       method: "PATCH",
       headers: this._headers,
       body: JSON.stringify({
-        name: name,
-        about: info,
+        name,
+        about,
       }),
     }).then((res) => this._addResult(res));
   }
 
   // Редакт аватара
-  editUserAvatar(url) {
+  editAvatar(url) {
     return fetch(`${this._url}/users/me/avatar`, {
       method: "PATCH",
       headers: this._headers,
@@ -87,8 +85,22 @@ class Api {
       }),
     }).then((res) => this._addResult(res));
   }
-}
 
+  // Лайк карточки
+  changeLikeStatus(id, isLiked) {
+    if (isLiked) {
+      return fetch(`${this._url}/cards/${id}/likes`, {
+        headers: this._headers,
+        method: "PUT",
+      }).then((res) => this._addResult(res));
+    } else {
+      return fetch(`${this._url}/cards/${id}/likes`, {
+        headers: this._headers,
+        method: "DELETE",
+      }).then((res) => this._addResult(res));
+    }
+  }
+}
 const api = new Api({
   baseUrl: "https://mesto.nomoreparties.co/v1/cohort-59",
   headers: {
