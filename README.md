@@ -1,6 +1,6 @@
 # mesto-react
 
-## Проект по переносу [mesto](https://github.com/Ww228wW/mesto) на _react_
+## Проект по переносу [mesto](https://github.com/Andro-Andy/mesto) на _react_
 
 ### Компоненты
 
